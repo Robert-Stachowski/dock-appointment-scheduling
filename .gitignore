@@ -1,0 +1,43 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+/backend/build/
+/backend/dist/
+
+# --- Virtualenv (root albo backend/) ---
+.venv/
+venv/
+
+# --- Sekrety / konfiguracja lokalna ---
+.env
+.env.*
+!.env.example
+
+# --- Testy i coverage ---
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# --- Narzędzia jakości ---
+.mypy_cache/
+.dmypy.json
+.ruff_cache/
+
+# --- Frontend ---
+node_modules/
+/frontend/dist/
+
+# --- IDE / system ---
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# --- Logi ---
+*.log
+
+# --- Prywatne notatki ---
+/projekt_awizacje_plan.md
