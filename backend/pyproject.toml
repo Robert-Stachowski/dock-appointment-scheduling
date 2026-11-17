@@ -1,0 +1,29 @@
+[project]
+name = "dock-appointment-scheduling"
+version = "0.1.0"
+requires-python = ">= 3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "sqlalchemy[asyncio]",
+    "asyncpg",
+    "alembic",
+    "pydantic-settings",
+    "pyjwt",
+    "pwdlib[argon2]",
+    "apscheduler"
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-mock",
+    "pytest-asyncio",
+    "httpx",
+    "ruff",
+    "mypy",
+    "bandit",
+    "pre-commit",
+    "safety",
+]
+
