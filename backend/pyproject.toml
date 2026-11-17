@@ -18,7 +18,7 @@ dependencies = [
     "apscheduler"
 ]
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "pytest",
     "pytest-mock",
@@ -29,5 +29,8 @@ dev = [
     "bandit",
     "pre-commit",
     "safety",
+    "pip-tools"
 ]
+
+
 
