@@ -36,3 +36,12 @@ repos:
       - id: bandit
         args: ["-c", "backend/pyproject.toml"]
         exclude: ^backend/tests/
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: mypy --config-file backend/pyproject.toml backend/app backend/tests
+        language: system
+        types: [python]
+        pass_filenames: false
