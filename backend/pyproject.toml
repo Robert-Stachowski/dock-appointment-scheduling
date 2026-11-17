@@ -31,6 +31,3 @@ dev = [
     "safety",
     "pip-tools"
 ]
-
-
-
