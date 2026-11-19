@@ -41,7 +41,7 @@ repos:
     hooks:
       - id: mypy
         name: mypy
-        entry: mypy --config-file backend/pyproject.toml backend/app backend/tests
+        entry: mypy --config-file backend/pyproject.toml backend/app backend/tests backend/alembic
         language: system
         types: [python]
         pass_filenames: false
