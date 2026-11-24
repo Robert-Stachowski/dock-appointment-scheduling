@@ -8,6 +8,7 @@ from app.core.database import Base
 from app.models.enum_type import AccountRole
 
 if TYPE_CHECKING:
+    from app.models.carrier import Carrier
     from app.models.employee import Employee
 
 
@@ -30,6 +31,7 @@ class Account(Base):
     )
 
     employee: Mapped["Employee | None"] = relationship(back_populates="account")
+    carrier: Mapped["Carrier | None"] = relationship(back_populates="account")
 
     def __repr__(self) -> str:
         return f"Konto: {self.id} - {self.email}, rola: {self.role}"
