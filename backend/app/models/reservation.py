@@ -7,6 +7,7 @@ from sqlalchemy import (
     Enum,
     ForeignKey,
     Identity,
+    Index,
     SmallInteger,
     String,
     func,
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
     from app.models.account import Account
     from app.models.carrier import Carrier
     from app.models.ramp import Ramp
+    from app.models.reservation_log import ReservationLog
 
 
 class Reservation(Base):
@@ -47,6 +49,7 @@ class Reservation(Base):
             where=text("status <> 'cancelled'"),
             name="ex_reservations_ramp_overlap",
         ),
+        Index("ix_reservations_carrier_id_start_at", "carrier_id", "start_at"),
     )
 
     id: Mapped[int] = mapped_column(Identity(), primary_key=True)
@@ -85,3 +88,4 @@ class Reservation(Base):
 
     carrier: Mapped["Carrier"] = relationship(back_populates="reservations")
     ramp: Mapped["Ramp"] = relationship(back_populates="reservations")
+    logs: Mapped[list["ReservationLog"]] = relationship(back_populates="reservation")

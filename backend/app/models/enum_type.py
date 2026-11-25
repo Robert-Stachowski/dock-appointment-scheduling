@@ -15,3 +15,10 @@ class ReservationStatus(StrEnum):
     READY = "ready"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
+
+
+class LogEventType(StrEnum):
+    CREATED = "created"
+    DATA_CHANGED = "data_changed"
+    STATUS_CHANGED = "status_changed"
+    CANCELLED = "cancelled"
