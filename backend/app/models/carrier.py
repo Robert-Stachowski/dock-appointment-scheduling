@@ -7,6 +7,7 @@ from app.core.database import Base
 
 if TYPE_CHECKING:
     from app.models.account import Account
+    from app.models.reservation import Reservation
 
 
 class Carrier(Base):
@@ -23,3 +24,4 @@ class Carrier(Base):
     phone: Mapped[str] = mapped_column(String(20), unique=True)
 
     account: Mapped["Account"] = relationship(back_populates="carrier")
+    reservations: Mapped[list["Reservation"]] = relationship(back_populates="carrier")

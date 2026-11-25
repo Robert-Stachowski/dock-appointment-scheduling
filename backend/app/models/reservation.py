@@ -1,0 +1,87 @@
+from datetime import datetime
+from typing import TYPE_CHECKING
+
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Identity,
+    SmallInteger,
+    String,
+    func,
+    literal_column,
+    text,
+)
+from sqlalchemy.dialects.postgresql import ExcludeConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.core.database import Base
+from app.models.enum_type import ReservationStatus
+
+if TYPE_CHECKING:
+    from app.models.account import Account
+    from app.models.carrier import Carrier
+    from app.models.ramp import Ramp
+
+
+class Reservation(Base):
+    __tablename__ = "reservations"
+    __table_args__ = (
+        CheckConstraint(
+            "pallet_count BETWEEN 1 AND 33", name="ck_reservations_pallet_count"
+        ),
+        CheckConstraint("start_at < end_at", name="ck_reservations_time_order"),
+        CheckConstraint(
+            "((status = 'cancelled') = (cancelled_by IS NOT NULL))"
+            " AND ((status = 'cancelled') = (cancelled_at IS NOT NULL))",
+            name="ck_reservations_cancel_consistency",
+        ),
+        ExcludeConstraint(
+            ("ramp_id", "="),
+            (
+                func.tstzrange(literal_column("start_at"), literal_column("end_at")),
+                "&&",
+            ),
+            using="gist",
+            where=text("status <> 'cancelled'"),
+            name="ex_reservations_ramp_overlap",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Identity(), primary_key=True)
+    carrier_id: Mapped[int] = mapped_column(ForeignKey("carriers.id"))
+    ramp_id: Mapped[int] = mapped_column(ForeignKey("ramps.id"))
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    pallet_count: Mapped[int] = mapped_column(SmallInteger)
+    product_description: Mapped[str] = mapped_column(String(100))
+    driver_first_name: Mapped[str] = mapped_column(String(50))
+    driver_last_name: Mapped[str] = mapped_column(String(50))
+    registration_number: Mapped[str] = mapped_column(String(15))
+    driver_phone: Mapped[str] = mapped_column(String(20))
+    status: Mapped[ReservationStatus] = mapped_column(
+        Enum(
+            ReservationStatus,
+            name="reservation_status",
+            values_callable=lambda enum_cls: [rstatus.value for rstatus in enum_cls],
+        ),
+        server_default=ReservationStatus.PENDING.value,
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_by: Mapped[int | None] = mapped_column(ForeignKey("accounts.id"))
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    cancelled_by: Mapped[int | None] = mapped_column(ForeignKey("accounts.id"))
+    cancelled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    updated_by_account: Mapped["Account | None"] = relationship(
+        foreign_keys=[updated_by]
+    )
+    cancelled_by_account: Mapped["Account | None"] = relationship(
+        foreign_keys=[cancelled_by]
+    )
+
+    carrier: Mapped["Carrier"] = relationship(back_populates="reservations")
+    ramp: Mapped["Ramp"] = relationship(back_populates="reservations")

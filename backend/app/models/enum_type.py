@@ -6,3 +6,12 @@ class AccountRole(StrEnum):
     WAREHOUSEMAN = "warehouseman"
     CARRIER = "carrier"
     SYSTEM = "system"
+
+
+class ReservationStatus(StrEnum):
+    PENDING = "pending"
+    LATE = "late"
+    AFTER_HOURS_PAID = "after_hours_paid"
+    READY = "ready"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
