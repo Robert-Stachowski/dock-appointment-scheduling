@@ -17,6 +17,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import ExcludeConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app import constants
 from app.core.database import Base
 from app.models.enum_type import ReservationStatus
 
@@ -31,12 +32,15 @@ class Reservation(Base):
     __tablename__ = "reservations"
     __table_args__ = (
         CheckConstraint(
-            "pallet_count BETWEEN 1 AND 33", name="ck_reservations_pallet_count"
+            f"pallet_count BETWEEN {constants.MIN_PALLETS} AND {constants.MAX_PALLETS}",
+            name="ck_reservations_pallet_count",
         ),
         CheckConstraint("start_at < end_at", name="ck_reservations_time_order"),
         CheckConstraint(
-            "((status = 'cancelled') = (cancelled_by IS NOT NULL))"
-            " AND ((status = 'cancelled') = (cancelled_at IS NOT NULL))",
+            f"((status = '{ReservationStatus.CANCELLED}') = "
+            "(cancelled_by IS NOT NULL))"
+            f" AND ((status = '{ReservationStatus.CANCELLED}') = "
+            "(cancelled_at IS NOT NULL))",
             name="ck_reservations_cancel_consistency",
         ),
         ExcludeConstraint(
@@ -46,7 +50,7 @@ class Reservation(Base):
                 "&&",
             ),
             using="gist",
-            where=text("status <> 'cancelled'"),
+            where=text(f"status <> '{ReservationStatus.CANCELLED}'"),
             name="ex_reservations_ramp_overlap",
         ),
         Index("ix_reservations_carrier_id_start_at", "carrier_id", "start_at"),
